@@ -9,17 +9,27 @@
         @foreach($columns as $i => $c)
         <th align="center" valign="middle" class="head{{ $i }}">{{ $c }}</th>
         @endforeach
+
     </tr>
-    </thead>
-    @if ($footerMode !== 'hidden')
-        <tfoot>
-        <tr>
-            @foreach($columns as $i => $c)
-            <th align="center" valign="middle" class="footer{{ $i }}">@if($footerMode === 'columns') {{ $c }} @endif</th>
-            @endforeach
-        </tr>
-        </tfoot>
+    <!-- comment footer -->
+    @if(Request::is('admin/mainvoice*') || Request::is('admin/mapayment*') || Request::is('admin/iainvoice*'))
+            <tr>
+                @foreach($columns as $i => $c)
+            <th align="center" valign="middle" class="head{{ $i }}">
+                @if(!str_contains(strtolower($c),'action'))
+    @if(str_contains(strtolower($c),'date') )
+            <div class="input-append date" data-form="datepicker" data-date="" data-date-format="yyyy-mm-dd" >
+                <input style="width: 100px" id="{{$c}}" name="date_from" data-form="datepicker" class="grd-white" data-form="" size="16" type="text" value="" data-date-format="yyyy-mm-dd"  data-validation-format="yyyy-mm-dd" > <span class="add-on"><i class="icon-th"></i></span> </div>
+                    @else
+            <input type="text" style="width:120px" name="{{$c}}" value="{{$c}}" class="search_init">
+                    @endif
     @endif
+            </th>
+        @endforeach
+            </tr>
+            @endif
+
+    </thead>
     <tbody>
     @foreach($data as $d)
     <tr>
@@ -29,8 +39,28 @@
     </tr>
     @endforeach
     </tbody>
+    <!-- comment footer
+    @if(Request::is('admin/mainvoice*'))
+    <tfoot>
+    <tr>
+        @foreach($columns as $i => $c)
+            <th align="center" valign="middle" class="head{{ $i }}">
+                @if(!str_contains(strtolower($c),'action'))
+                @if(str_contains(strtolower($c),'date') )
+                        <div class="input-append date" data-form="datepicker" data-date="" data-date-format="yyyy-mm-dd" >
+                            <input style="width: 100px" id="{{$c}}" name="date_from" data-form="datepicker" class="grd-white" data-form="" size="16" type="text" value="" data-date-format="yyyy-mm-dd"  data-validation-format="yyyy-mm-dd" > <span class="add-on"><i class="icon-th"></i></span> </div>
+                    @else
+                <input type="text" style="width:120px" name="{{$c}}" value="{{$c}}" class="search_init">
+                    @endif
+                    @endif
+            </th>
+        @endforeach
+    </tr>
+    </tfoot>
+    @endif
+            -->
 </table>
 
 @if (!$noScript)
-    @include(Config::get('datatable::table.script_view'), array('id' => $id, 'options' => $options, 'callbacks' =>  $callbacks))
+    @include('datatable::javascript', array('id' => $id, 'options' => $options, 'callbacks' =>  $callbacks))
 @endif
