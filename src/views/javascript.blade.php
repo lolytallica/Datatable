@@ -1,32 +1,51 @@
-<script type="text/javascript">
+<script>
     jQuery(document).ready(function(){
         // dynamic table
-        oTable = jQuery('#{{ $id }}').dataTable({
-
+        var oTable = jQuery('#{{ $id }}').dataTable({
+            "sPaginationType": "simple_numbers",
+            "bProcessing": false,
         @foreach ($options as $k => $o)
-            {{ json_encode($k) }}: @if(!is_array($o)) @if(preg_match("/function/", $o)) {{ $o }}, @else {{ json_encode($o) }}, @endif
-                @elseif(key($o) === 0) {{-- if we have an array, no need to print keys --}}
-                [
-                    @foreach ($o as $r)
-                    @if(is_array($r)) {{ json_encode($r) }}, @elseif(preg_match("/function/", $r)) {{ $r }}, @else {{ json_encode($r) }}, @endif
-
-                    @endforeach
-                ],
-                @else
-                {
-                    @foreach ($o as $x => $r) 
-                    {{ json_encode($x) }}: @if(is_array($r)) {{ json_encode($r) }}, @elseif(preg_match("/function/", $r)) {{ $r }}, @else {{ json_encode($r) }}, @endif
-                    @endforeach
-                },
-                @endif
-
+        {{ json_encode($k) }}: {{ json_encode($o) }},
         @endforeach
-
         @foreach ($callbacks as $k => $o)
-            {{ json_encode($k) }}: {{ $o }},
+        {{ json_encode($k) }}: {{ $o }},
         @endforeach
+    });
 
-        });
-    // custom values are available via $values array
+        var asInitVals = new Array();
+        $("thead input").change( function () {
+            /* Filter on the column (the index) of this element */
+            oTable.fnFilter( this.value, $("thead input").index(this) );
+        } );
+//datepicker
+        $("thead input").on('changeDate', function () {
+            /* Filter on the column (the index) of this element */
+            oTable.fnFilter( this.value, $("thead input").index(this) );
+        } );
+
+        /*
+         * Support functions to provide a little bit of 'user friendlyness' to the textboxes in
+         * the footer
+         */
+        $("thead input").each( function (i) {
+            asInitVals[i] = this.value;
+        } );
+
+        $("thead input").focus( function () {
+            if ( this.className == "search_init" )
+            {
+                this.className = "";
+                this.value = "";
+            }
+        } );
+
+        $("thead input").blur( function (i) {
+            if ( this.value == "" )
+            {
+                this.className = "search_init";
+                this.value = asInitVals[$("thead input").index(this)];
+            }
+        } );
+        // custom values are available via $values array
     });
 </script>
