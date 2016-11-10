@@ -1,6 +1,7 @@
 <?php namespace Chumper\Datatable;
 
 use Illuminate\Support\ServiceProvider;
+use View;
 
 class DatatableServiceProvider extends ServiceProvider {
 
@@ -38,4 +39,5 @@ class DatatableServiceProvider extends ServiceProvider {
     {
         return array('datatable');
     }
+
 }

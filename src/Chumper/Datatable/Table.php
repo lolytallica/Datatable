@@ -59,11 +59,6 @@ class Table {
     protected $className;
 
     /**
-     * @var String The footer's display mode
-     */
-    protected $footerMode = 'hidden';
-
-    /**
      * @var String The view used to render the table
      */
     protected $table_view;
@@ -127,7 +122,6 @@ class Table {
     }
 
     /**
-     * Count the number of columns in the datatable.
      * @return int
      */
     public function countColumns()
@@ -136,9 +130,6 @@ class Table {
     }
 
     /**
-     * Remove an option item from the options array
-     *
-     * @param string $key the name of the key to remove from the options.
      * @return $this
      */
     public function removeOption($key)
@@ -148,8 +139,6 @@ class Table {
     }
 
     /**
-     * Set a single option or an array of options for the jquery call
-     *
      * @return $this
      * @throws \Exception
      */
@@ -168,24 +157,6 @@ class Table {
         }
         else
             throw new Exception('Invalid number of options provided for the method "setOptions"');
-        return $this;
-    }
-
-    /**
-     * @return $this
-     * @throws \Exception
-     */
-    public function setOrder($order = array())
-    {
-        $_orders = array();
-        foreach ($order as $number => $sort)
-        {
-            $_orders[] .= '[ ' . $number . ', "' . $sort . '" ]';
-        }
-
-        $_build = '[' . implode(', ', $_orders) . ']';
-
-        $this->callbacks['aaSorting'] = $_build;
         return $this;
     }
 
@@ -290,16 +261,14 @@ class Table {
 
     /**
      * @param null $view
-     * @param array $additional_template_variables
      * @return mixed
      */
-    public function render($view = null, array $additional_template_variables = null)
+    public function render($view = null)
     {
         if( ! is_null($view))
             $this->table_view = $view;
 
-	        //If there is an ajax option (new mode since datatable 1.10), do not use compatibility mode (Bruno de l'Escaille)
-     	if(!isset($this->options['sAjaxSource']) && !isset($this->options['ajax']))
+        if(!isset($this->options['sAjaxSource']))
         {
             $this->setUrl(Request::url());
         }
@@ -310,7 +279,7 @@ class Table {
             $this->createMapping();
         }
 
-        $template_variables = array (
+        return View::make($this->table_view,array(
             'options'   => $this->options,
             'callbacks' => $this->callbacks,
             'values'    => $this->customValues,
@@ -319,14 +288,7 @@ class Table {
             'noScript'  => $this->noScript,
             'id'        => $this->idName,
             'class'     => $this->className,
-            'footerMode'=> $this->footerMode,
-        );
-
-        if (is_array($additional_template_variables)) {
-            $template_variables += $additional_template_variables;
-        }
-
-        return View::make($this->table_view, $template_variables);
+        ));
     }
 
     /**
@@ -340,10 +302,6 @@ class Table {
         return $this;
     }
 
-    /**
-     * @param null $view
-     * @return mixed
-     */
     public function script($view = null)
     {
         if( ! is_null($view))
@@ -362,63 +320,29 @@ class Table {
         ));
     }
 
-    /**
-     * @return String
-     */
     public function getId()
     {
         return $this->idName;
     }
 
-    /**
-     * @param string $id
-     * @return $this
-     */
     public function setId($id = '')
     {
         $this->idName = empty($id)? str_random(8) : $id;
         return $this;
     }
 
-    /**
-     * @return String
-     */
     public function getClass()
     {
         return $this->className;
     }
 
-    /**
-     * Set the name of the class that will be used by the datatable.
-     *
-     * @param $class the name of the class
-     * @return $this
-     */
     public function setClass($class)
     {
         $this->className = $class;
         return $this;
     }
 
-    /**
-     * Set the footer display mode.
-     *
-     * @param $value the one of next values: 'hidden', 'columns', 'empty'
-     * @return $this
-     */
-    public function showFooter($value = 'columns')
-    {
-        $this->footerMode = $value;
-        return $this;
-    }
-
-    /**
-     * Advise the Datatable to return the data mapped with the column name.
-     *
-     * @param bool $value explicitly set if the table should be aliased or not
-     * @return $this
-     */
-    public function setAliasMapping($value = true)
+    public function setAliasMapping($value)
     {
         $this->createdMapping = !$value;
         return $this;
@@ -426,31 +350,30 @@ class Table {
 
     //--------------------PRIVATE FUNCTIONS
 
-    /**
-     * @return array
-     */
     private function createMapping()
     {
         // set options for better handling
         // merge with existing options
-        if (!array_key_exists('aoColumns', $this->options)) {
+        if(!array_key_exists('aoColumns', $this->options))
+        {
             $this->options['aoColumns'] = array();
         }
-
         $matching = array();
         $i = 0;
-
-        foreach ($this->aliasColumns as $name) {
-            if (array_key_exists($i, $this->options['aoColumns'])) {
-                $this->options['aoColumns'][$i] = array_merge_recursive($this->options['aoColumns'][$i], array('mData' => $name));
-            } else {
+        foreach($this->aliasColumns as $name)
+        {
+            if(array_key_exists($i,$this->options['aoColumns']))
+            {
+                $this->options['aoColumns'][$i] = array_merge_recursive($this->options['aoColumns'][$i],array('mData' => $name));
+            }
+            else
+            {
                 $this->options['aoColumns'][$i] = array('mData' => $name);
             }
             $i++;
         }
-
         $this->createdMapping = true;
-
+        //dd($matching);
         return $matching;
     }
 }
