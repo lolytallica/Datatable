@@ -21,7 +21,7 @@
             <div class="input-append date" data-form="datepicker" data-date="" data-date-format="yyyy-mm-dd" >
                 <input style="width: 100px" id="{{$c}}" name="date_from" data-form="datepicker" class="grd-white" data-form="" size="16" type="text" value="" data-date-format="yyyy-mm-dd"  data-validation-format="yyyy-mm-dd" > <span class="add-on"><i class="icon-th"></i></span> </div>
                     @else
-            <input type="text" style="width:120px" name="{{$c}}" value="{{$c}}" class="search_init">
+            <input type="text" style="width:80px" name="{{$c}}" value="{{$c}}" class="search_init">
                     @endif
     @endif
             </th>
