@@ -19,7 +19,9 @@
                 @if(!str_contains(strtolower($c),'action'))
     @if(str_contains(strtolower($c),'date') )
             <div class="input-append date" data-form="datepicker" data-date="" data-date-format="yyyy-mm-dd" >
-                <input style="width: 100px" id="{{$c}}" name="{{$c}}" data-form="datepicker" class="grd-white" data-form="" size="16" type="text" value="" data-date-format="yyyy-mm-dd"  data-validation-format="yyyy-mm-dd" > <span class="add-on"><i class="icon-th"></i></span> </div>
+                <input style="width: 80px" id="{{$c}}" name="{{$c}}" data-form="datepicker" class="grd-white" data-form="" size="16" type="text" value="" data-date-format="yyyy-mm-dd"  data-validation-format="yyyy-mm-dd" > <span class="add-on"><i class="icon-th"></i></span> </div>
+                    @elseif(str_contains(strtolower($c),'cur'))
+                        <input type="text" style="width:40px" name="{{$c}}" value="{{$c}}" class="search_init">
                     @else
             <input type="text" style="width:80px" name="{{$c}}" value="{{$c}}" class="search_init">
                     @endif
